@@ -1,0 +1,19 @@
+{
+  "name": "ecom",
+  "version": "1.0.0",
+  "description": "Ecommerce API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feelfreetocodecourse/ecom.git"
+  },
+  "author": "feelfreetocode",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/feelfreetocodecourse/ecom/issues"
+  },
+  "homepage": "https://github.com/feelfreetocodecourse/ecom#readme"
+}
