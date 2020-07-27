@@ -1,4 +1,6 @@
 const express = require('express')
+// creating connection
+require('./database/connection')()
 const morgan = require('morgan')
 const application = express()
 
