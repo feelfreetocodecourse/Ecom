@@ -1,11 +1,10 @@
 const express = require('express')
+const { getOrders } = require('../controller/order-controller')
 
 const orderRouter = express.Router()
 
-
-orderRouter.get('', (req, res) => {
-    res.json({ message: 'Orders Working..' })
-})
+// /api/orders/
+orderRouter.get('', getOrders)
 
 
 
