@@ -35,6 +35,12 @@ const userSchema = new Schema(
   }
 );
 
+userSchema.statics.isExists = async function isExists(email) {
+  console.log("Is Exists Method ");
+  const user = await this.findOne({email: email});
+  return user ? true : false;
+};
+
 const User = mongoose.model("user", userSchema);
 
 module.exports = {User};

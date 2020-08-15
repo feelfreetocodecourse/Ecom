@@ -1,11 +1,16 @@
 const {User} = require("../models/user");
 const Joi = require("joi");
+const passwordHash = require("password-hash");
+const jwt = require("jsonwebtoken");
+
+// /todo
+// middleware explanation
 
 function getUsers(request, response, next) {
   response.json({message: "Users Api Is Working.."});
 }
 
-async function saveUser(request, response, next) {
+function validateUserForRegistation(user) {
   const schema = Joi.object({
     name: Joi.string().min(4).max(40).required(),
     email: Joi.string().email().required(),
@@ -13,9 +18,21 @@ async function saveUser(request, response, next) {
     repassword: Joi.string().min(6).max(30).required(),
     phone: Joi.string().min(10).max(12),
   });
+  const result = schema.validate(user);
+  return result;
+}
 
-  const result = schema.validate(request.body);
+function validateLoginCredentials(body) {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).max(30).required(),
+  });
+  const result = schema.validate(body);
+  return result;
+}
 
+async function saveUser(request, response, next) {
+  const result = validateUserForRegistation(request.body);
   if (result.error) {
     // throw error
     response.status(400);
@@ -31,8 +48,10 @@ async function saveUser(request, response, next) {
   }
 
   // cheak user is unique
-  let user = await User.findOne({email: userData.email});
-  if (!user) {
+  let isExists = await User.isExists(userData.email);
+
+  if (!isExists) {
+    userData.password = passwordHash.generate(userData.password);
     user = await new User(userData).save();
     response.json(user);
   } else {
@@ -41,4 +60,58 @@ async function saveUser(request, response, next) {
   }
 }
 
-module.exports = {getUsers, saveUser};
+async function loginUser(request, response, next) {
+  console.log(request.body);
+  const result = validateLoginCredentials(request.body);
+  if (result.error) {
+    response.status(400);
+    const err = new Error(result.error.details[0].message);
+    return next(err);
+  }
+
+  const {email, password} = result.value;
+  const user = await User.findOne({email});
+  console.log("user", user);
+  if (user) {
+    // password cheak
+    const isPasswordMatched = passwordHash.verify(password, user.password);
+    if (isPasswordMatched) {
+      // login success
+      const payload = {
+        _id: user._id,
+        isAdmin: user.isAdmin,
+        email: user.email,
+      };
+
+      const token = jwt.sign(payload, "1234");
+      return response.json({message: "Login Success", token});
+    }
+  }
+
+  response.status(400);
+  const err = new Error("Email or password invalid");
+  return next(err);
+}
+
+async function updateUser(request, response, next) {
+  const loggedInUser = request.session.user;
+  console.log("LOggedIn User", loggedInUser);
+
+  const schema = Joi.object({
+    phone: Joi.string().min(10).max(12),
+    name: Joi.string().min(4).max(40),
+  });
+
+  const result = schema.validate(request.body);
+
+  if (result.error) {
+    return next(new Error(result.error.details[0].message));
+  } else {
+    let user = await User.findById(loggedInUser._id);
+    user = Object.assign(user, result.value);
+    user = await user.save();
+    response.json(user);
+  }
+}
+
+module.exports = {getUsers, saveUser, loginUser, updateUser};
