@@ -1,5 +1,9 @@
 const express = require("express");
-require("express-async-errors");
+
+// enviroment variables configuration
+require("dotenv").config();
+const {UPLOAD_FOLDER} = process.env;
+
 // creating connection
 require("./database/connection")();
 const morgan = require("morgan");
@@ -8,13 +12,14 @@ const {productRouter} = require("./router/product-router");
 const {orderRouter} = require("./router/order-router");
 const {categoryRouter} = require("./router/category-router");
 const handleErrors = require("./middlwares/error-handler");
+
 const application = express();
 
 application.use(express.json());
 application.use(morgan("dev"));
 
-application.listen(3000, () => {
-  console.log("listening On Port 3000");
+application.listen(process.env.PORT || 3000, () => {
+  console.log(`listening On Port ${process.env.PORT || 3000}`);
 });
 
 application.get("/", (req, res) => {
@@ -29,5 +34,13 @@ APIRouter.use("/users", userRouter);
 APIRouter.use("/products", productRouter);
 APIRouter.use("/orders", orderRouter);
 APIRouter.use("/categories", categoryRouter);
+
+APIRouter.get("/" + UPLOAD_FOLDER + "/*", (req, res, next) => {
+  const path = req.url;
+  const filePath = `${__dirname}${path}`;
+  res.sendFile(filePath, (err) => {
+    next();
+  });
+});
 
 application.use(handleErrors);

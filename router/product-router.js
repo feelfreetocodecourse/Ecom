@@ -2,9 +2,10 @@ const express = require("express");
 var multer = require("multer");
 const mongoose = require("mongoose");
 const path = require("path");
-const {UPLOAD_FOLDER} = require("../constants");
+const {UPLOAD_FOLDER} = process.env;
 const {
   getProducts,
+  getProduct,
   createProduct,
 } = require("../controller/product-controller");
 const {adminAuthMiddleware} = require("../middlwares/user-auth-middleware");
@@ -27,6 +28,7 @@ const upload = multer({storage});
 
 // /api/products/
 productRouter.get("/", getProducts);
+productRouter.get("/:productId", getProduct);
 productRouter.post(
   "/",
   adminAuthMiddleware,

@@ -1,11 +1,17 @@
 const {Product} = require("../models/product");
 const Joi = require("joi");
-const {UPLOAD_FOLDER} = require("../constants");
+const {UPLOAD_FOLDER} = process.env;
 
 async function getProducts(request, response) {
   const products = await Product.find();
 
   response.json({products});
+}
+
+async function getProduct(request, response) {
+  const _id = request.params.productId;
+  const product = await Product.findOne({_id});
+  response.json({product});
 }
 
 function validateProduct(data) {
@@ -43,4 +49,4 @@ async function createProduct(request, response, next) {
   response.json({product});
 }
 
-module.exports = {getProducts, createProduct};
+module.exports = {getProducts, createProduct, getProduct};
