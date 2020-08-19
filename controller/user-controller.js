@@ -3,8 +3,8 @@ const Joi = require("joi");
 const passwordHash = require("password-hash");
 const jwt = require("jsonwebtoken");
 
-function getUsers(request, response, next) {
-  response.json({message: "Users Api Is Working.."});
+async function getUsers(request, response, next) {
+  response.json(await User.find());
 }
 
 function validateUserForRegistation(user) {
