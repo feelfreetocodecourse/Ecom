@@ -1,4 +1,5 @@
 const express = require("express");
+require("express-async-errors");
 // creating connection
 require("./database/connection")();
 const morgan = require("morgan");

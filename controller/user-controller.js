@@ -3,9 +3,6 @@ const Joi = require("joi");
 const passwordHash = require("password-hash");
 const jwt = require("jsonwebtoken");
 
-// /todo
-// middleware explanation
-
 function getUsers(request, response, next) {
   response.json({message: "Users Api Is Working.."});
 }
@@ -113,5 +110,14 @@ async function updateUser(request, response, next) {
     response.json(user);
   }
 }
+async function updateUserById(request, response, next) {
+  const user_id = request.params.user_id;
+  console.log("LOggedIn User", request.body);
 
-module.exports = {getUsers, saveUser, loginUser, updateUser};
+  let user = await User.findById(user_id);
+  user = Object.assign(user, request.body);
+  user = await user.save();
+  response.json(user);
+}
+
+module.exports = {getUsers, saveUser, loginUser, updateUser, updateUserById};
