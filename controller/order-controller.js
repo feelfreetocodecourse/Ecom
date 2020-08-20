@@ -14,6 +14,12 @@ async function getOrders(request, response) {
   response.json({orders});
 }
 
+async function getOrderByUser(request, response, next) {
+  const user = request.params.userId;
+  const orders = await Order.find({user}).populate("product");
+  response.json({orders});
+}
+
 async function placeOrder(request, response, next) {
   const schema = Joi.object({
     orders: Joi.array()
@@ -43,4 +49,4 @@ async function placeOrder(request, response, next) {
   response.json({orders: saveResult});
 }
 
-module.exports = {getOrders, placeOrder};
+module.exports = {getOrders, placeOrder, getOrderByUser};

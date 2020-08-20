@@ -9,7 +9,6 @@ const orderRouter = express.Router();
 
 // /api/orders/
 orderRouter.get("/", adminAuthMiddleware, getOrders);
-
 orderRouter.post("/", userAuthMiddleware, placeOrder);
 
 module.exports = {orderRouter};
