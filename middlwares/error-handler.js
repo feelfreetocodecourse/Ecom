@@ -1,12 +1,10 @@
 const {logger} = require("../logger/logger");
 
 process.on("uncaughtException", (err) => {
-  console.log("uncaughtException");
   logger.error(err.message, err);
 });
 
 process.on("unhandledRejection", (err) => {
-  console.log("unhandledRejection ---------");
   logger.error(err.message, err);
 });
 

@@ -3,14 +3,13 @@ require("express-async-errors");
 const handleErrors = require("./middlwares/error-handler");
 
 // enviroment variables configuration
-require("dotenv").config();
+
 const {UPLOAD_FOLDER} = process.env;
 
 // creating connection
 require("./database/connection")();
 const morgan = require("morgan");
 const routers = require("./router/routers");
-const {User} = require("./models/user");
 
 //creating Application
 const application = express();
