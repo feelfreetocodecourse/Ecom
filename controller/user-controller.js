@@ -4,7 +4,15 @@ const passwordHash = require("password-hash");
 const jwt = require("jsonwebtoken");
 
 async function getUsers(request, response, next) {
-  response.json(await User.find());
+  const limit = Number.parseInt(request.query.pagesize) || 20;
+  const page = Number.parseInt(request.query.page) || 1;
+  const sort_by = request.query.sort;
+  const skip = limit * (page - 1);
+
+  const users = await User.find().sort(sort_by).skip(skip).limit(limit);
+  const count = await User.countDocuments();
+
+  response.json({users, count});
 }
 
 function validateUserForRegistation(user) {

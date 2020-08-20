@@ -20,6 +20,44 @@ async function getOrderByUser(request, response, next) {
   response.json({orders});
 }
 
+async function deleteOrder(request, response, next) {
+  const _id = request.params.orderId;
+  const result = await Order.deleteOne({_id});
+  response.json({result});
+}
+
+async function updateOrder(request, response, next) {
+  const _id = request.params.orderId;
+  const body = request.body;
+
+  const schema = Joi.object({
+    product: Joi.string(),
+    user: Joi.string(),
+    address: Joi.string(),
+    quantity: Joi.number().min(1),
+    status: Joi.boolean(),
+    payment_method: Joi.string(),
+  });
+
+  const {value, error} = schema.validate(body);
+
+  if (error) {
+    next(new Error(error.details[0].message));
+    return;
+  }
+
+  if (value.product) {
+    value.price = (await Product.findById(value.product)).price;
+  }
+
+  const result = await Order.findOneAndUpdate(
+    {_id},
+    {$set: value},
+    {new: true}
+  );
+  response.json({result});
+}
+
 async function placeOrder(request, response, next) {
   const schema = Joi.object({
     orders: Joi.array()
@@ -49,4 +87,10 @@ async function placeOrder(request, response, next) {
   response.json({orders: saveResult});
 }
 
-module.exports = {getOrders, placeOrder, getOrderByUser};
+module.exports = {
+  getOrders,
+  placeOrder,
+  getOrderByUser,
+  deleteOrder,
+  updateOrder,
+};

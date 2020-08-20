@@ -2,10 +2,15 @@ const {Product} = require("../models/product");
 const Joi = require("joi");
 const {UPLOAD_FOLDER} = process.env;
 
-async function getProducts(request, response) {
-  const products = await Product.find();
+async function getProducts(request, response, next) {
+  const limit = Number.parseInt(request.query.pagesize) || 20;
+  const page = Number.parseInt(request.query.page) || 1;
+  const sort_by = request.query.sort;
+  const skip = limit * (page - 1);
 
-  response.json({products});
+  const products = await Product.find().sort(sort_by).skip(skip).limit(limit);
+  const count = await Product.countDocuments();
+  response.json({products, count});
 }
 
 async function getProduct(request, response) {

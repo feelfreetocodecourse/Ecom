@@ -16,7 +16,7 @@ const {
 const userRouter = express.Router();
 
 // /api/users/
-userRouter.get("/", getUsers);
+userRouter.get("/", adminAuthMiddleware, getUsers);
 
 // /api/users/123/orders
 userRouter.get("/:userId/orders", userAuthMiddleware, getOrderByUser);
