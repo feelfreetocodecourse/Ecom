@@ -1,6 +1,8 @@
 const express = require("express");
 require("express-async-errors");
 const handleErrors = require("./middlwares/error-handler");
+const helmet = require("helmet");
+const cors = require("cors");
 
 // enviroment variables configuration
 
@@ -13,6 +15,14 @@ const routers = require("./router/routers");
 
 //creating Application
 const application = express();
+
+// application.use(helmet());
+var corsOptions = {
+  origin: "localhost:4200",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+// application.use(cors(corsOptions));
+application.use(cors());
 
 application.use(express.json());
 application.use(morgan("dev"));
@@ -39,7 +49,4 @@ APIRouter.get("/" + UPLOAD_FOLDER + "/*", (req, res, next) => {
 });
 
 application.use(handleErrors);
-
-console.log("Starting Application In Server.JS");
-
 module.exports = {application};

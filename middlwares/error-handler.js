@@ -12,7 +12,7 @@ function handleErrors(error, request, response, next) {
   console.log(error);
   try {
     if (response.statusCode === 200) {
-      logger.error(err.message, err);
+      logger.error(erorr.message, error);
       response.status(500);
     }
     response.json({error: error.message || "something went Wrong"});
